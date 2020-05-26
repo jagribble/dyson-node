@@ -21,7 +21,7 @@ function decryptPassword(encrypted) {
 }
 
 class DysonDevice {
-    constructor({ Active = false, Serial = '', Name, Version, LocalCredentials, AutoUpdate, NewVersionAvailable, ProductType, ConnectionType }, deviceIP = false) {
+    constructor({ Active = false, Serial = '', Name, Version, LocalCredentials, AutoUpdate, NewVersionAvailable, ProductType, ConnectionType }, updatedCallback = () => {}, deviceIP = false) {
         this.active = Active;
         this.serial = Serial;
         this.name = Name;
@@ -35,6 +35,7 @@ class DysonDevice {
         if (this.deviceIP) {
             this.connectManually(this.name, this.deviceIP);
         }
+        this.updatedCallback = updatedCallback
         // self._credentials = decrypt_password(json_body['LocalCredentials'])
     }
 
@@ -106,6 +107,7 @@ class DysonDevice {
                     case "CURRENT-STATE":
                         console.log('Update fan data from CURRENT-STATE - ', this.serial);
                         this.fanState.updateState(result);
+                        this.updatedCallback(this.fanState);
                         // console.log(this.fanState);
                         this.mqttEvent.emit(this.STATE_EVENT);
                         resolve();

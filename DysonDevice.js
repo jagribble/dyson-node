@@ -31,7 +31,7 @@ class DysonDevice {
         ProductType,
         ConnectionType },
         updatedCallback = () => { },
-        updateEnviromentCallback = () => { },
+        updateEnvironmentCallback = () => { },
         deviceIP = false) {
         this.active = Active;
         this.serial = Serial;
@@ -47,7 +47,7 @@ class DysonDevice {
             this.connectManually(this.name, this.deviceIP);
         }
         this.updatedCallback = updatedCallback;
-        this.updateEnviromentCallback = updateEnviromentCallback;
+        this.updateEnvironmentCallback = updateEnvironmentCallback;
         // self._credentials = decrypt_password(json_body['LocalCredentials'])
     }
 
@@ -106,7 +106,7 @@ class DysonDevice {
                     case "ENVIRONMENTAL-CURRENT-SENSOR-DATA":
                         console.log('Update sensor data from ENVIRONMENTAL-CURRENT-SENSOR-DATA - ', this.serial);
                         this.environment.updateState(result);
-                        this.updateEnviromentCallback(result);
+                        this.updateEnvironmentCallback(result);
                         break;
                     case "CURRENT-STATE":
                         console.log('Update fan data from CURRENT-STATE - ', this.serial);

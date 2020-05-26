@@ -106,7 +106,7 @@ class DysonDevice {
                     case "ENVIRONMENTAL-CURRENT-SENSOR-DATA":
                         console.log('Update sensor data from ENVIRONMENTAL-CURRENT-SENSOR-DATA - ', this.serial);
                         this.environment.updateState(result);
-                        this.updateEnvironmentCallback(result);
+                        this.updateEnvironmentCallback(this.environment);
                         break;
                     case "CURRENT-STATE":
                         console.log('Update fan data from CURRENT-STATE - ', this.serial);

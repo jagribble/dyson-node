@@ -21,7 +21,18 @@ function decryptPassword(encrypted) {
 }
 
 class DysonDevice {
-    constructor({ Active = false, Serial = '', Name, Version, LocalCredentials, AutoUpdate, NewVersionAvailable, ProductType, ConnectionType }, updatedCallback = () => {}, deviceIP = false) {
+    constructor({
+        Active = false,
+        Serial = '', Name,
+        Version,
+        LocalCredentials,
+        AutoUpdate,
+        NewVersionAvailable,
+        ProductType,
+        ConnectionType },
+        updatedCallback = () => { },
+        updateEnviromentCallback = () => { },
+        deviceIP = false) {
         this.active = Active;
         this.serial = Serial;
         this.name = Name;
@@ -35,7 +46,8 @@ class DysonDevice {
         if (this.deviceIP) {
             this.connectManually(this.name, this.deviceIP);
         }
-        this.updatedCallback = updatedCallback
+        this.updatedCallback = updatedCallback;
+        this.updateEnviromentCallback = updateEnviromentCallback;
         // self._credentials = decrypt_password(json_body['LocalCredentials'])
     }
 
@@ -86,30 +98,20 @@ class DysonDevice {
                 console.log("Connected to " + this.serial + ". subscribe now");
                 this.client.subscribe(this.statusSubscribeTopic);
                 this.requestCurrentData();
-
-                let currentTime = new Date();
-                // this.client.publish(this.commandTopic, JSON.stringify({
-                //     msg: 'REQUEST-CURRENT-STATE',
-                //     time: currentTime.toISOString()
-                // }));
             });
 
             this.client.on('message', (topic, message) => {
-                // console.log(message.toString());
                 let result = JSON.parse(message);
                 switch (result.msg) {
                     case "ENVIRONMENTAL-CURRENT-SENSOR-DATA":
                         console.log('Update sensor data from ENVIRONMENTAL-CURRENT-SENSOR-DATA - ', this.serial);
                         this.environment.updateState(result);
-                        // console.log(this.environment);
-                        // this.environmentEvent.emit(this.SENSOR_EVENT);
+                        this.updateEnviromentCallback(result);
                         break;
                     case "CURRENT-STATE":
                         console.log('Update fan data from CURRENT-STATE - ', this.serial);
                         this.fanState.updateState(result);
                         this.updatedCallback(this.fanState);
-                        // console.log(this.fanState);
-                        this.mqttEvent.emit(this.STATE_EVENT);
                         resolve();
                         break;
                     case "STATE-CHANGE":
@@ -141,7 +143,7 @@ class DysonDevice {
     }
 
     setAuto() {
-        let data =  { auto: "ON" };
+        let data = { auto: "ON" };
         if (this.fanState._auto) {
             data = { auto: "OFF" };
         }
@@ -162,7 +164,7 @@ class DysonDevice {
 
     setFanOff() {
         console.log('TURN FAN OFF')
-        const data = { fpwr: "OFF" } ;
+        const data = { fpwr: "OFF" };
         this._publishMessage(data);
     }
 

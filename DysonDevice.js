@@ -66,7 +66,7 @@ class DysonDevice {
 
     async connectManually(name, deviceIP, devicePort = 1883) {
         return new Promise((resolve, reject) => {
-
+            this.deviceIP = deviceIP;
             const options = {
                 username: this.serial,
                 password: this.credentials,
@@ -84,8 +84,6 @@ class DysonDevice {
                 options.protocolVersion = 3;
                 options.protocolId = 'MQIsdp';
             }
-            console.log(options);
-            // mqtt://10.0.5.75
             this.client = mqtt.connect(`mqtt://${deviceIP}`, options);
 
             this.statusSubscribeTopic = `${this.productType}/${this.serial}/status/current`;

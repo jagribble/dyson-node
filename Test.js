@@ -6,6 +6,7 @@ dotenv.config();
 
 const account = new DysonAccount(process.env.DYSON_EMAIL,process.env.DYSON_PASSWORD);
 
+
 function delay(t, val) {
     return new Promise(function(resolve) {
         setTimeout(function() {
@@ -42,6 +43,7 @@ account.login().then(() => {
         // device.setNightMode();
         // await delay(5000);
         // device.setNightMode();
-        device.setFanFocused();
+        //device.setFanFocused();
+        device.setAuto()
     }).catch(err => console.error(err));
 }).catch(err => console.error(err));

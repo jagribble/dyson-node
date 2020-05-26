@@ -139,9 +139,9 @@ class DysonDevice {
     }
 
     setAuto() {
-        let data =  { fmod: "AUTO", auto: "ON" };
+        let data =  { auto: "ON" };
         if (this.fanState._auto) {
-            data = { fmod: "FAN" };
+            data = { auto: "OFF" };
         }
         console.log('Auto Mode', data);
         this._publishMessage(data);

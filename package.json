@@ -1,6 +1,6 @@
 {
   "name": "dyson-node",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Hook in to the dyson link api",
   "main": "index.js",
   "scripts": {
@@ -9,15 +9,10 @@
   "author": "Jules Gribble",
   "license": "ISC",
   "dependencies": {
-    "async-mqtt": "^2.6.0",
     "dateformat": "^3.0.3",
     "dotenv": "^8.2.0",
     "events": "^3.1.0",
-    "homebridge": "^1.1.0",
-    "homebridge-dyson-link": "^2.5.2",
-    "mdns": "^2.5.1",
     "mqtt": "^4.1.0",
-    "node-fetch": "^2.6.0",
-    "request": "^2.88.2"
+    "node-fetch": "^2.6.0"
   }
 }

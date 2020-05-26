@@ -194,17 +194,18 @@ class DysonDevice {
      * CURRENTLY BROKEN
      * @param {*} value 
      */
-    setRotate(value) {
-        const rotateFrom = this.fanState._rotateFrom - value / 2;
-        const rotateTo = this.fanState._rotateTo + value / 2
-        console.log('ROTATE FROM (OSAL) -->', rotateFrom);
-        console.log('ROTATE TO (OSAU) -->', rotateTo);
-        const data = {
-            oscs: "ON",
-            oson: "ON",
-            osal: rotateFrom.toString().padStart(4),
-            osau: rotateTo.toString().padStart(4)
-        };
+    setRotate() {
+        // const rotateFrom = this.fanState._rotateFrom - value / 2;
+        // const rotateTo = this.fanState._rotateTo + value / 2
+        // console.log('ROTATE FROM (OSAL) -->', rotateFrom);
+        // console.log('ROTATE TO (OSAU) -->', rotateTo);
+        // const data = {
+        //     oscs: "ON",
+        //     oson: "ON",
+        //     osal: rotateFrom.toString().padStart(4),
+        //     osau: rotateTo.toString().padStart(4)
+        // };
+        const data = { oson: !this.fanState._rotate ? "ON" : "OFF" }
         this._publishMessage(data);
     }
 

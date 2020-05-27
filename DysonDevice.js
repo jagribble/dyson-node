@@ -1,8 +1,6 @@
 const crypto = require('crypto');
 const mqtt = require('mqtt');
 const mdns = require('multicast-dns')({ loopback: true });
-const dateformat = require('dateformat');
-const { EventEmitter } = require("events");
 const { DysonFanState } = require('./DysonFanState');
 const { DysonEnvironmentState } = require('./DysonEnvironment');
 

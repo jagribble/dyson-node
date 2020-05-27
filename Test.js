@@ -19,7 +19,6 @@ account.login().then(() => {
     account.getDevices().then(async devices => {
         const device = new DysonDevice(devices[0]);
         await device.autoConnect();
-        // await device.connectManually(devices[0].name, '10.0.5.75');
         if(device.fanState._heat){
             device.setHeatMode();
         }

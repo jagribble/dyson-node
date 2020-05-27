@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const mqtt = require('mqtt');
+const mdns = require('multicast-dns')({loopback: true});
 const dateformat = require('dateformat');
 const { EventEmitter } = require("events");
 const { DysonFanState } = require('./DysonFanState');
@@ -52,16 +53,25 @@ class DysonDevice {
     }
 
     autoConnect() {
-
-        // const browser = mdns.createBrowser(mdns.tcp('dyson'));
-        // browser.on('serviceUp', function(service) {
-        //     console.log("service up: ", service);
-        //   });
-        //   browser.on('serviceDown', function(service) {
-        //     console.log("service down: ", service);
-        //   });
-
-        //   browser.start();
+        const serialLocal = `${this.serial}.local`;
+        const self = this;
+        mdns.on('response', function(response) {
+            if (response.answers.length > 0){
+                const answer = response.answers.find(a => a.name === serialLocal);
+                if(answer){
+                    // If correct answer then destroy the MDNS UDP socket
+                    mdns.destroy();
+                    self.deviceIP = answer.data;
+                    self.connectManually(this.serial, self.deviceIP);
+                } 
+            }
+          });
+        mdns.query({
+            questions:[{
+              name: `${this.serial}.local`,
+              type: 'A'
+            }]
+          })
     }
 
     async connectManually(name, deviceIP, devicePort = 1883) {
@@ -71,15 +81,7 @@ class DysonDevice {
                 username: this.serial,
                 password: this.credentials,
             };
-            console.log('password => ', Buffer.from(this.credentials).toString('base64'))
-            console.log('URI', `mqtt://${deviceIP}`);
-
-
-            this.mqttEvent = new EventEmitter();
-            this.mqttEvent.setMaxListeners(30);
-
-            this.environmentEvent = new EventEmitter();
-
+        
             if (this.productType === '438' || this.productType === '520') {
                 options.protocolVersion = 3;
                 options.protocolId = 'MQIsdp';

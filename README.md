@@ -14,7 +14,7 @@ const account = new DysonAccount(process.env.DYSON_EMAIL,process.env.DYSON_PASSW
 account.login().then(() => {
     account.getDevices().then(async devices => {
         const device = new DysonDevice(devices[0]);
-        await device.connectManually(devices[0].name, '10.0.5.75');
+        await device.autoConnect();
         // If on heat mode then turn off heat mode
         if(device.fanState._heat){
             device.setHeatMode();

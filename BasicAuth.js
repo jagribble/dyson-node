@@ -5,8 +5,6 @@ class BasicAuth {
     }
 
     getAuthHeader() {
-        console.log('Username ',this.username);
-        console.log('Password ', this.password)
         const base64 = Buffer.from(`${this.username}:${this.password}`).toString('base64');
         return {
             Authorization: `Basic ${base64}`

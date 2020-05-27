@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const mqtt = require('mqtt');
-const mdns = require('multicast-dns')({loopback: true});
+const mdns = require('multicast-dns')({ loopback: true });
 const dateformat = require('dateformat');
 const { EventEmitter } = require("events");
 const { DysonFanState } = require('./DysonFanState');
@@ -16,7 +16,6 @@ function decryptPassword(encrypted) {
     // let decipher = crypto.createDecipheriv('aes-128-gcm', ENC_KEY, IV);
     let decrypted = decipher.update(encrypted, 'base64', 'utf-8');
     decrypted += decipher.final('utf-8');
-    console.log('Decrypted --> ', JSON.parse(decrypted));
     const json = JSON.parse(decrypted);
     return (json.apPasswordHash);
 }
@@ -52,26 +51,29 @@ class DysonDevice {
         // self._credentials = decrypt_password(json_body['LocalCredentials'])
     }
 
-    autoConnect() {
-        const serialLocal = `${this.serial}.local`;
-        const self = this;
-        mdns.on('response', function(response) {
-            if (response.answers.length > 0){
-                const answer = response.answers.find(a => a.name === serialLocal);
-                if(answer){
-                    // If correct answer then destroy the MDNS UDP socket
-                    mdns.destroy();
-                    self.deviceIP = answer.data;
-                    self.connectManually(this.serial, self.deviceIP);
-                } 
-            }
-          });
-        mdns.query({
-            questions:[{
-              name: `${this.serial}.local`,
-              type: 'A'
-            }]
-          })
+    async autoConnect() {
+        return new Promise((resolve) => {
+            const serialLocal = `${this.serial}.local`;
+            const self = this;
+            mdns.on('response', async (response) => {
+                if (response.answers.length > 0) {
+                    const answer = response.answers.find(a => a.name === serialLocal);
+                    if (answer) {
+                        // If correct answer then destroy the MDNS UDP socket
+                        mdns.destroy();
+                        self.deviceIP = answer.data;
+                        await self.connectManually(this.serial, self.deviceIP);
+                        resolve();
+                    }
+                }
+            });
+            mdns.query({
+                questions: [{
+                    name: `${this.serial}.local`,
+                    type: 'A'
+                }]
+            })
+        });
     }
 
     async connectManually(name, deviceIP, devicePort = 1883) {
@@ -81,7 +83,7 @@ class DysonDevice {
                 username: this.serial,
                 password: this.credentials,
             };
-        
+
             if (this.productType === '438' || this.productType === '520') {
                 options.protocolVersion = 3;
                 options.protocolId = 'MQIsdp';
@@ -138,7 +140,6 @@ class DysonDevice {
 
     setFanSpeed(speed) {
         const data = { fnsp: Math.round(speed / 10).toString() };
-        console.log('Fan speed', data);
         this._publishMessage(data);
     }
 
@@ -147,29 +148,24 @@ class DysonDevice {
         if (this.fanState._auto) {
             data = { auto: "OFF" };
         }
-        console.log('Auto Mode', data);
         this._publishMessage(data);
     }
 
     setHeatMode(force = false) {
         let currentTime = new Date();
         let data = { hmod: "HEAT" };
-        console.log(this.fanState._heat);
         if (this.fanState._heat && !force) {
             data = { hmod: "OFF", fmod: "FAN" };
         }
-        console.log('Heat Mode', data);
         this._publishMessage(data);
     }
 
     setFanOff() {
-        console.log('TURN FAN OFF')
         const data = { fpwr: "OFF" };
         this._publishMessage(data);
     }
 
     setFanOn() {
-        console.log('TURN FAN ON')
         const data = { fpwr: "ON" };
         this._publishMessage(data);
     }
@@ -192,21 +188,7 @@ class DysonDevice {
         this._publishMessage(data);
     }
 
-    /**
-     * CURRENTLY BROKEN
-     * @param {*} value 
-     */
     setRotate() {
-        // const rotateFrom = this.fanState._rotateFrom - value / 2;
-        // const rotateTo = this.fanState._rotateTo + value / 2
-        // console.log('ROTATE FROM (OSAL) -->', rotateFrom);
-        // console.log('ROTATE TO (OSAU) -->', rotateTo);
-        // const data = {
-        //     oscs: "ON",
-        //     oson: "ON",
-        //     osal: rotateFrom.toString().padStart(4),
-        //     osau: rotateTo.toString().padStart(4)
-        // };
         const data = { oson: !this.fanState._rotate ? "ON" : "OFF" }
         this._publishMessage(data);
     }

@@ -27,19 +27,15 @@ class DysonAccount{
                 this.username = account.Account;
                 this.appPassword = account.Password;
                 this.auth = new BasicAuth(account.Account, account.Password);
-                console.log(account);
                 resolve(true);
             }).catch(err => {
-                console.log('Error',err);
                 reject(new Error(err));
-                console.error(err);
             });
         });
     }
 
     getDevices() {
         return new Promise((resolve, reject) => {
-            console.log(this.auth.getAuthHeader());
             fetch(`https://${DYSON_API_URL}/v2/provisioningservice/manifest`, {
                 headers: {
                     ...this.auth.getAuthHeader()
@@ -53,7 +49,6 @@ class DysonAccount{
             }).catch(err => {
                 console.log('Error',JSON.stringify(err));
                 reject(new Error(err));
-                console.error(err); 
             });
         });
     }

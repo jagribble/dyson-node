@@ -1,11 +1,9 @@
 {
   "name": "dyson-node",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Hook in to the dyson link api",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "author": "Jules Gribble",
   "license": "ISC",
   "dependencies": {

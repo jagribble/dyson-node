@@ -5,11 +5,19 @@
   "main": "index.js",
   "scripts": {},
   "author": "Jules Gribble",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jagribble/dyson-node.git"
+  },
+  "homepage": "https://github.com/jagribble/dyson-node",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^8.2.0",
     "mqtt": "^4.1.0",
     "multicast-dns": "^7.2.2",
     "node-fetch": "^2.6.0"
-  }
+  },
+  "keywords": [
+    "dyson"
+  ]
 }

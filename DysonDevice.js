@@ -77,6 +77,7 @@ class DysonDevice {
     async connectManually(name, deviceIP, devicePort = 1883) {
         return new Promise((resolve, reject) => {
             this.deviceIP = deviceIP;
+            this.name = name;
             const options = {
                 username: this.serial,
                 password: this.credentials,
@@ -150,7 +151,6 @@ class DysonDevice {
     }
 
     setHeatMode(force = false) {
-        let currentTime = new Date();
         let data = { hmod: "HEAT" };
         if (this.fanState._heat && !force) {
             data = { hmod: "OFF", fmod: "FAN" };

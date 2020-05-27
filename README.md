@@ -1,13 +1,111 @@
 # dyson-node
-A library for connecting to dyson fans
-
 [![npm version](https://badge.fury.io/js/dyson-node.svg)](https://badge.fury.io/js/dyson-node)
 
-```js
-const dotenv = require('dotenv');
-const {DysonAccount, DysonDevice } = require('dyson-node');
+A library for connecting to dyson fans
 
-dotenv.config();
+# Installation
+```
+npm install --save dyson-node
+```
+
+# Usage
+> To use the dyson node package you will need to first have a dyson link account. For an account you can sign up [here](https://www.dyson.co.uk/your-dyson.html) or signup through the dyson link application for [Google Play](https://play.google.com/store/apps/details?id=com.dyson.mobile.android&hl=en_GB) and [Apple App Store](https://apps.apple.com/gb/app/dyson-link/id993135524).
+
+## Account
+Before you can control the devices you will need to first sign in to your account so that you can access your devices.
+
+```js
+const { DysonAccount } = require('dyson-node');
+
+const account = new DysonAccount(process.env.DYSON_EMAIL,process.env.DYSON_PASSWORD);
+
+account.login().then(() => {
+  account.getDevices().then(async devices => {
+      console.log(devices);
+  }).catch(err => console.error(err));
+}).catch(err => console.error(err));
+```
+This can also be done using async/await instead of traditional promises.
+
+```js
+async function asyncStart(){
+  const account = new DysonAccount(process.env.DYSON_EMAIL,process.env.DYSON_PASSWORD);
+  await account.login();
+  const devices = await account.getDevices();
+  console.log(devices);
+}
+
+asyncStart();
+```
+
+## Device
+Once you have a list of devices you will be able to create a device object and start controlling the device.
+
+```js
+const { DysonAccount, DysonDevice } = require('dyson-node');
+
+// ...
+const devices = await account.getDevices();
+const device = new DysonDevice(devices[0]);
+// ...
+```
+
+To get notified when the device or environment updates you can pass in callbacks that will get called when this information is updated.
+
+```js
+function fanStateCallback(data) {
+    console.log('Fan state', data);
+}
+
+function environmentCallback(data){ 
+    console.log('Environment state', data);
+}
+
+const device = new DysonDevice(devices[0], fanStateCallback, environmentCallback);
+```
+
+There are two methods of connecting the device `autoConnect` and `connectManually`. `autoConnect` uses [mdsn](https://www.npmjs.com/package/multicast-dns) to search the devices network for the local record for the serial number of the device. After you have connected to the device you can use the device methods to control it.
+
+### **_device.autoConnect()_**
+Connect to the device automaticly using mdsn.
+
+### **_device.connectManually(name: string, deviceIP: string)_**
+Connect to the device using a manual known IP address. 
+
+### **_device.requestCurrentData()_**
+Make a request for the current data. This will send a MQTT message to the device requesting the fan state and environment state. To get the state values you will need to pass in a callback to the constructor of the device (mentioned above).
+
+### **_device.setFanSpeed(speed: number)_**
+Set the fan speed percentage. Minimum value 0. Maximum value 100.
+
+### **_device.setAuto()_**
+Set the device to Auto mode. If it is alrready on auto mode it will toggle it off.
+
+### **_device.setHeatMode(force: boolean?)_**
+Turn the heat mode on. If the heat mode is already on then it will be toggled off. If you pass in the force flag then heat mode will be set on regardless of what state the current heat mode is.
+
+### **_device.setFanOff()_**
+Turn the fan off.
+
+### **_device.setFanOn()_**
+Turn the fan on.
+
+### **_device.setFanFocused()_**
+Set the fan to focused mode. If the fan is already in focused mode then this will toggle off.
+
+### **_device.setNightMode()_**
+Set the fan to night mode. If the fan is already in night mode then this will toggle off.
+
+### **_device.setRotate()_**
+Set the fan to rotate. If the fan is already rotating then this will toggle off. Currently there is not a way to pass in the angle to rotate. 
+
+### **_device.setHeatThreshold(celcius: number)_**
+Set the heat threshold for the device. This will also turn on heat mode.
+
+## Example code
+
+```js
+const { DysonAccount, DysonDevice } = require('dyson-node');
 
 const account = new DysonAccount(process.env.DYSON_EMAIL,process.env.DYSON_PASSWORD);
 

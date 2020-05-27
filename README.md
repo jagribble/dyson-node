@@ -66,40 +66,52 @@ const device = new DysonDevice(devices[0], fanStateCallback, environmentCallback
 
 There are two methods of connecting the device `autoConnect` and `connectManually`. `autoConnect` uses [mdsn](https://www.npmjs.com/package/multicast-dns) to search the devices network for the local record for the serial number of the device. After you have connected to the device you can use the device methods to control it.
 
-### **_device.autoConnect()_**
+### `device.autoConnect()`
+---
 Connect to the device automaticly using mdsn.
 
-### **_device.connectManually(name: string, deviceIP: string)_**
+### `device.connectManually(name: string, deviceIP: string)`
+---
 Connect to the device using a manual known IP address. 
 
-### **_device.requestCurrentData()_**
+### `device.requestCurrentData()`
+---
 Make a request for the current data. This will send a MQTT message to the device requesting the fan state and environment state. To get the state values you will need to pass in a callback to the constructor of the device (mentioned above).
 
-### **_device.setFanSpeed(speed: number)_**
+### `device.setFanSpeed(speed: number)`
+---
 Set the fan speed percentage. Minimum value 0. Maximum value 100.
 
-### **_device.setAuto()_**
+### `device.setAuto()`
+---
 Set the device to Auto mode. If it is alrready on auto mode it will toggle it off.
 
-### **_device.setHeatMode(force: boolean?)_**
+### `device.setHeatMode(force: boolean?)`
+---
 Turn the heat mode on. If the heat mode is already on then it will be toggled off. If you pass in the force flag then heat mode will be set on regardless of what state the current heat mode is.
 
-### **_device.setFanOff()_**
+### `device.setFanOff()`
+---
 Turn the fan off.
 
-### **_device.setFanOn()_**
+### `device.setFanOn()`
+---
 Turn the fan on.
 
-### **_device.setFanFocused()_**
+### `device.setFanFocused()`
+---
 Set the fan to focused mode. If the fan is already in focused mode then this will toggle off.
 
-### **_device.setNightMode()_**
+### `device.setNightMode()`
+---
 Set the fan to night mode. If the fan is already in night mode then this will toggle off.
 
-### **_device.setRotate()_**
+### `device.setRotate()`
+---
 Set the fan to rotate. If the fan is already rotating then this will toggle off. Currently there is not a way to pass in the angle to rotate. 
 
-### **_device.setHeatThreshold(celcius: number)_**
+### `device.setHeatThreshold(celcius: number)`
+---
 Set the heat threshold for the device. This will also turn on heat mode.
 
 ## Example code

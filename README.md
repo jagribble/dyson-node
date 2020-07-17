@@ -1,5 +1,6 @@
 # dyson-node
 [![npm version](https://badge.fury.io/js/dyson-node.svg)](https://badge.fury.io/js/dyson-node)
+![Node.js Package](https://github.com/jagribble/dyson-node/workflows/Node.js%20Package/badge.svg)
 
 A library for connecting to dyson fans
 

@@ -1,6 +1,5 @@
 const crypto = require('crypto');
 const mqtt = require('mqtt');
-const mdns = require('multicast-dns')({ loopback: true });
 const { DysonFanState } = require('./DysonFanState');
 const { DysonEnvironmentState } = require('./DysonEnvironment');
 
@@ -21,7 +20,8 @@ function decryptPassword(encrypted) {
 class DysonDevice {
     constructor({
         Active = false,
-        Serial = '', Name,
+        Serial = '', 
+        Name,
         Version,
         LocalCredentials,
         AutoUpdate,
@@ -53,6 +53,8 @@ class DysonDevice {
         return new Promise((resolve) => {
             const serialLocal = `${this.serial}.local`;
             const self = this;
+            const mdns = require('multicast-dns')({ loopback: true });
+            let timeout = null;
             mdns.on('response', async (response) => {
                 if (response.answers.length > 0) {
                     const answer = response.answers.find(a => a.name === serialLocal);
@@ -60,6 +62,7 @@ class DysonDevice {
                         // If correct answer then destroy the MDNS UDP socket
                         mdns.destroy();
                         self.deviceIP = answer.data;
+                        clearTimeout(timeout);
                         await self.connectManually(this.serial, self.deviceIP);
                         resolve();
                     }
@@ -70,7 +73,12 @@ class DysonDevice {
                     name: `${this.serial}.local`,
                     type: 'A'
                 }]
-            })
+            });
+            // If it is timeout after 2 mins then destroy
+            timeout = setTimeout(() => {
+                mdns.destroy();
+                throw new Error(`Device '${name}' timedout afte 2 mins`);
+            }, 120000); 
         });
     }
 
